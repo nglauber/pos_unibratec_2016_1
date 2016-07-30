@@ -7,4 +7,6 @@
     <string name="texto_resultado_gasolina">Melhor abastecer com gasolina</string>
     <string name="texto_resultado_alcool">Melhor abastecer com alcool</string>
     <string name="error_valores_invalidos">Valores inválidos!</string>
+    <string name="button_resultado">Ver resultado</string>
+    <string name="texto_resultado">Resultado</string>
 </resources>
