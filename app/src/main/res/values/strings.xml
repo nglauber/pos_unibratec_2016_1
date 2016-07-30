@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Exercise01</string>
+    <string name="texto_gasolina">Gas</string>
+    <string name="texto_alcool">Etanol</string>
+    <string name="button_calcular">Calculate</string>
+
+    <string name="texto_resultado_gasolina">It\'s better to fill with gas.</string>
+    <string name="texto_resultado_alcool">It\'s better to fill with etanol.</string>
+    <string name="error_valores_invalidos">Invalid values!</string>
+</resources>
