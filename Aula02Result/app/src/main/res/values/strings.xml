@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Aula02Result</string>
+    <string name="texto_nome">Nome</string>
+    <string name="texto_rede_social">Rede Social</string>
+    <string name="button_resultado">Resultado</string>
+    <string name="button_selecionar">Selecionar</string>
+    <string-array name="redes_sociais">
+        <item>Facebook</item>
+        <item>G+</item>
+        <item>Twitter</item>
+    </string-array>
+    <string name="mensagem_usuario">Olá %1$s, sua rede social é %2$s.</string>
+</resources>
