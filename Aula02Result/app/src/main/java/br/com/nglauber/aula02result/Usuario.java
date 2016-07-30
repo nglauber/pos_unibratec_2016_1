@@ -3,9 +3,10 @@ package br.com.nglauber.aula02result;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
-import java.io.Serializable;
+import org.parceler.Parcel;
 
-public class Usuario extends BaseObservable implements Serializable {
+@Parcel
+public class Usuario extends BaseObservable  {
     public static final int REDE_FACEBOOK = 0;
     public static final int REDE_GPLUS = 1;
     public static final int REDE_TWITTER = 2;

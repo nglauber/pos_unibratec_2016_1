@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import org.parceler.Parcels;
+
 import br.com.nglauber.aula02result.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null){
             mUsuario = new Usuario();
         } else {
-            mUsuario = (Usuario)savedInstanceState.getSerializable(EXTRA_USUARIO);
+            mUsuario = Parcels.unwrap(savedInstanceState.getParcelable(EXTRA_USUARIO));
         }
         mBinding.setUsuario(mUsuario);
     }
@@ -35,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(EXTRA_USUARIO, mUsuario);
+        outState.putParcelable(EXTRA_USUARIO, Parcels.wrap(mUsuario));
     }
 
     @Override
