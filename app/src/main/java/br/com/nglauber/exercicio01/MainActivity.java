@@ -1,11 +1,12 @@
 package br.com.nglauber.exercicio01;
 
-import android.support.v7.app.AppCompatActivity;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import br.com.nglauber.exercicio01.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,19 +15,15 @@ public class MainActivity extends AppCompatActivity {
     public static final int RESULT_GASOLINA = 2;
     private static final String EXTRA_RESULTADO = "result";
 
-    EditText mEditGasolina;
-    EditText mEditAlcool;
-    TextView mTextResultado;
+    ActivityMainBinding mBinding;
 
     int mResultado = RESULT_NENHUM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mEditGasolina = (EditText)findViewById(R.id.edit_gasolina);
-        mEditAlcool = (EditText)findViewById(R.id.edit_alcool);
-        mTextResultado = (TextView)findViewById(R.id.text_resultado);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        mBinding.setController(this);
 
         if (savedInstanceState != null){
             mResultado = savedInstanceState.getInt(EXTRA_RESULTADO);
@@ -36,9 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void atualizarTela() {
         if (mResultado == RESULT_GASOLINA){
-            mTextResultado.setText(R.string.texto_resultado_gasolina);
+            mBinding.textResultado.setText(R.string.texto_resultado_gasolina);
         } else if (mResultado == RESULT_ALCOOL){
-            mTextResultado.setText(R.string.texto_resultado_alcool);
+            mBinding.textResultado.setText(R.string.texto_resultado_alcool);
         }
     }
 
@@ -49,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void calcularClick(View view) {
-        String textoGas = mEditGasolina.getText().toString();
-        String textoAlcool = mEditAlcool.getText().toString();
+        String textoGas = mBinding.editGasolina.getText().toString();
+        String textoAlcool = mBinding.editAlcool.getText().toString();
 
         try {
             double gas = Double.parseDouble(textoGas);
