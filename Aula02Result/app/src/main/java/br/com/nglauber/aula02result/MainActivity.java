@@ -1,8 +1,10 @@
 package br.com.nglauber.aula02result;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
@@ -46,9 +48,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void redeSocialClick(View view) {
-        Intent it = new Intent(this, SocialActivity.class);
-        it.putExtra(SocialActivity.EXTRA_REDE_SOCIAL, mUsuario.getRedeSocial());
-        startActivityForResult(it, REQUEST_REDE_SOCIAL);
+        // Selecionando a rede social
+//        selecionarPorDialog();
+        selecionarPorIntent();
     }
 
     public void resultadoClick(View view) {
@@ -56,5 +58,39 @@ public class MainActivity extends AppCompatActivity {
         String rede = redes[mUsuario.getRedeSocial()];
         String s = getString(R.string.mensagem_usuario, mUsuario.getNome(), rede);
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+    }
+
+    private void selecionarPorIntent(){
+        Intent it = new Intent(this, SocialActivity.class);
+        it.putExtra(SocialActivity.EXTRA_REDE_SOCIAL, mUsuario.getRedeSocial());
+        startActivityForResult(it, REQUEST_REDE_SOCIAL);
+    }
+
+    private void selecionarPorDialog(){
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(final DialogInterface dialog, int which) {
+                mUsuario.setRedeSocial(which);
+                // GAMBI DETECTED!
+                mBinding.buttonRedeSocial.postDelayed(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                dialog.dismiss();
+                            }
+                        }, 300);
+            }
+        };
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.texto_rede_social)
+                .setSingleChoiceItems(
+                        getResources().getStringArray(R.array.redes_sociais),
+                        mUsuario.getRedeSocial(),
+                        listener)
+//                .setPositiveButton(android.R.string.ok, listener)
+//                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+        dialog.show();
     }
 }
