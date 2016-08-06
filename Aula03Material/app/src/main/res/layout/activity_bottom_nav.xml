@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="br.com.nglauber.aula03material.BottomNavActivity">
+
+    <ca.gcastle.bottomnavigation.view.BottomNavigationView
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/colorPrimary"
+        android:layout_gravity="bottom"
+        app:layout_behavior="ca.gcastle.bottomnavigation.behaviour.BottomNavigationBehavior">
+
+        <ca.gcastle.bottomnavigation.view.BottomNavigationTabView
+            android:id="@+id/tab1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:tabColor="@color/colorPrimary"
+            app:tabImage="@drawable/ic_home"
+            app:tabText="tab1" />
+
+        <ca.gcastle.bottomnavigation.view.BottomNavigationTabView
+            android:id="@+id/tab2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:tabColor="@color/colorAccent"
+            app:tabImage="@drawable/ic_search"
+            app:tabText="tab2" />
+
+        <ca.gcastle.bottomnavigation.view.BottomNavigationTabView
+            android:id="@+id/tab3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:tabColor="#00BCD4"
+            app:tabImage="@drawable/ic_help"
+            app:tabText="tab3" />
+
+    </ca.gcastle.bottomnavigation.view.BottomNavigationView>
+
+</android.support.design.widget.CoordinatorLayout>
