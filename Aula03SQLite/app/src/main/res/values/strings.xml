@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Carros</string>
+    <string name="texto_modelo">Modelo</string>
+    <string name="texto_fabricante">Fabricante</string>
+    <string name="texto_ano">Ano</string>
+    <string name="button_salvar">Salvar</string>
+    <string name="erro_cadastro">Erro ao cadastrar carro</string>
+    <string-array name="lista_fabricantes">
+        <item>Fiat</item>
+        <item>Ford</item>
+        <item>GM</item>
+        <item>Volkswagen</item>
+    </string-array>
+</resources>
