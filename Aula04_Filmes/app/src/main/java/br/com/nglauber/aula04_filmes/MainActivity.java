@@ -1,8 +1,9 @@
 package br.com.nglauber.aula04_filmes;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,15 +15,19 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.nglauber.aula04_filmes.http.MovieHttp;
+import br.com.nglauber.aula04_filmes.http.MoviesSearchTask;
 import br.com.nglauber.aula04_filmes.model.Movie;
 
 public class MainActivity extends AppCompatActivity
-        implements SearchView.OnQueryTextListener {
+        implements SearchView.OnQueryTextListener, LoaderManager.LoaderCallbacks<List<Movie>> {
+
+    private static final String QUERY_PARAM = "param";
+    public static final int LOADER_ID = 0;
 
     RecyclerView mRecyclerView;
     MovieAdapter mAdapter;
     List<Movie> mMoviesList;
+    LoaderManager mLoaderManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +42,15 @@ public class MainActivity extends AppCompatActivity
                 Intent it = new Intent(MainActivity.this, DetailActivity.class);
                 it.putExtra(DetailActivity.EXTRA_ID, movie.getId());
                 startActivity(it);
-//                Toast.makeText(MainActivity.this, movie.getId() +" - "+ movie.getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
 
         mRecyclerView = (RecyclerView)findViewById(R.id.main_recycler_movies);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
+
+        mLoaderManager = getSupportLoaderManager();
+        mLoaderManager.initLoader(LOADER_ID, null, this);
     }
 
     @Override
@@ -57,9 +64,13 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    // ---- OnQueryTextListener
     @Override
     public boolean onQueryTextSubmit(String query) {
-        new MoviesTask().execute(query);
+        LoaderManager lm = getSupportLoaderManager();
+        Bundle params = new Bundle();
+        params.putString(QUERY_PARAM, query);
+        lm.restartLoader(LOADER_ID, params, this);
         return true;
     }
 
@@ -68,20 +79,23 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    class MoviesTask extends AsyncTask<String, Void, List<Movie>>{
+    // ---- LoaderManager.LoaderCallbacks
+    @Override
+    public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
+        String s = args != null ? args.getString(QUERY_PARAM) : null;
+        return new MoviesSearchTask(this, s, mMoviesList);
+    }
 
-        @Override
-        protected List<Movie> doInBackground(String... strings) {
-            return MovieHttp.searchMovies(strings[0]);
+    @Override
+    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
+        if (data != null && data.size() > 0){
+            mMoviesList.clear();
+            mMoviesList.addAll(data);
+            mAdapter.notifyDataSetChanged();
         }
+    }
 
-        @Override
-        protected void onPostExecute(List<Movie> movies) {
-            super.onPostExecute(movies);
-            if (movies != null && movies.size() > 0){
-                mMoviesList.addAll(movies);
-                mAdapter.notifyDataSetChanged();
-            }
-        }
+    @Override
+    public void onLoaderReset(Loader<List<Movie>> loader) {
     }
 }
