@@ -28,15 +28,4 @@
         android:layout_toRightOf="@+id/movie_item_image_poster"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <RatingBar
-        android:id="@+id/movie_item_rating"
-        style="?android:attr/ratingBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:isIndicator="true" />
-
 </RelativeLayout>

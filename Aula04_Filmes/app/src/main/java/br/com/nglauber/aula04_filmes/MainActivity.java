@@ -1,5 +1,6 @@
 package br.com.nglauber.aula04_filmes;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -30,6 +31,15 @@ public class MainActivity extends AppCompatActivity
 
         mMoviesList = new ArrayList<>();
         mAdapter = new MovieAdapter(this, mMoviesList);
+        mAdapter.setMovieClickListener(new MovieAdapter.OnMovieClickListener() {
+            @Override
+            public void onMovieClick(Movie movie, int position) {
+                Intent it = new Intent(MainActivity.this, DetailActivity.class);
+                it.putExtra(DetailActivity.EXTRA_ID, movie.getId());
+                startActivity(it);
+//                Toast.makeText(MainActivity.this, movie.getId() +" - "+ movie.getTitle(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         mRecyclerView = (RecyclerView)findViewById(R.id.main_recycler_movies);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
