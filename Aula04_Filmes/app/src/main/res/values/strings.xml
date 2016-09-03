@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Aula04_Filmes</string>
+    <string name="hint_search">Type the movie title</string>
+</resources>
