@@ -1,6 +1,7 @@
 package br.com.nglauber.aula04_filmes.http;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,7 +67,10 @@ public class MovieHttp {
         try {
             response = client.newCall(request).execute();
             String json = response.body().string();
-            Gson gson = new Gson();
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.registerTypeAdapter(Movie.class, new MovieDeserializer());
+            Gson gson = gsonBuilder.create();
             Movie movie = gson.fromJson(json, Movie.class);
             return movie;
         } catch (IOException e) {

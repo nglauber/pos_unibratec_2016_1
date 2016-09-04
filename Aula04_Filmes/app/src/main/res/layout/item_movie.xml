@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp">
@@ -16,8 +17,8 @@
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/movie_item_image_poster"
         android:layout_toRightOf="@+id/movie_item_image_poster"
-        android:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        tools:text="Movie Title" />
 
     <TextView
         android:id="@+id/movie_item_text_year"
@@ -26,6 +27,6 @@
         android:layout_below="@+id/movie_item_text_title"
         android:layout_toEndOf="@+id/movie_item_image_poster"
         android:layout_toRightOf="@+id/movie_item_image_poster"
-        android:text="Medium Text"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:text="Movie year" />
 </RelativeLayout>

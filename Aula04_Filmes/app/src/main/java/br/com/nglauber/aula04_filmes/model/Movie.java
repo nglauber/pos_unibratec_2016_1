@@ -20,7 +20,8 @@ public class Movie {
     private String   director;
     @SerializedName("Plot")
     private String   plot;
-//    private String[] actors;
+    @SerializedName("Actors")
+    private String[] actors;
     @SerializedName("Runtime")
     private String   runtime;
     @SerializedName("imdbRating")
@@ -82,13 +83,13 @@ public class Movie {
         this.plot = plot;
     }
 
-//    public String[] getActors() {
-//        return actors;
-//    }
-//
-//    public void setActors(String[] actors) {
-//        this.actors = actors;
-//    }
+    public String[] getActors() {
+        return actors;
+    }
+
+    public void setActors(String[] actors) {
+        this.actors = actors;
+    }
 
     public String getRuntime() {
         return runtime;

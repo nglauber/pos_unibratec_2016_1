@@ -55,6 +55,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         TextView  txtDirector = (TextView)findViewById(R.id.detail_text_director);
         TextView  txtPlot     = (TextView)findViewById(R.id.detail_text_plot);
         TextView  txtRuntime  = (TextView)findViewById(R.id.detail_text_runtime);
+        TextView  txtActors   = (TextView)findViewById(R.id.detail_text_actors);
         RatingBar rating      = (RatingBar)findViewById(R.id.detail_rating);
 
         Glide.with(imgPoster.getContext()).load(movie.getPoster()).into(imgPoster);
@@ -65,6 +66,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         txtPlot.setText(movie.getPlot());
         txtRuntime.setText(movie.getRuntime());
         rating.setRating(movie.getRating() / 2);
+        
+        StringBuffer sb = new StringBuffer();
+        for (String actor :
+                movie.getActors()) {
+            sb.append(actor).append('\n');
+        }
+        txtActors.setText(sb.toString());
     }
 
     @Override
