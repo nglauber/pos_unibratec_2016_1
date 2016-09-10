@@ -32,7 +32,7 @@ public class MovieDeserializer implements JsonDeserializer<Movie> {
             movie.setRuntime(jsonObject.get("Runtime").getAsString());
 
             String rating = jsonObject.get("imdbRating").getAsString();
-            if (isDouble(rating)) movie.setRating((float)Float.parseFloat(rating));
+            if (isDouble(rating)) movie.setRating(Float.parseFloat(rating));
 
             return movie;
 

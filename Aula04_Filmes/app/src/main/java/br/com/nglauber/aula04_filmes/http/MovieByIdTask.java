@@ -30,6 +30,7 @@ public class MovieByIdTask extends AsyncTaskLoader<Movie> {
 
     @Override
     public Movie loadInBackground() {
-        return MovieHttp.loadMovieById(mId);
+        mMovie = MovieHttp.loadMovieById(mId);
+        return mMovie;
     }
 }

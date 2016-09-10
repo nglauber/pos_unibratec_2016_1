@@ -33,11 +33,6 @@ public class MoviesSearchTask extends AsyncTaskLoader<List<Movie>> {
 
     @Override
     public List<Movie> loadInBackground() {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         movies.addAll(MovieHttp.searchMovies(query));
         return movies;
     }

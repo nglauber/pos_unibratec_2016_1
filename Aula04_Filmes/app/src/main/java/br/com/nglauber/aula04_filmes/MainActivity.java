@@ -1,11 +1,13 @@
 package br.com.nglauber.aula04_filmes;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -46,7 +48,11 @@ public class MainActivity extends AppCompatActivity
         });
 
         mRecyclerView = (RecyclerView)findViewById(R.id.main_recycler_movies);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        } else {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        }
         mRecyclerView.setAdapter(mAdapter);
 
         mLoaderManager = getSupportLoaderManager();
@@ -67,10 +73,9 @@ public class MainActivity extends AppCompatActivity
     // ---- OnQueryTextListener
     @Override
     public boolean onQueryTextSubmit(String query) {
-        LoaderManager lm = getSupportLoaderManager();
         Bundle params = new Bundle();
         params.putString(QUERY_PARAM, query);
-        lm.restartLoader(LOADER_ID, params, this);
+        mLoaderManager.restartLoader(LOADER_ID, params, this);
         return true;
     }
 
