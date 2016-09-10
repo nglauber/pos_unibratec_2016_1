@@ -1,7 +1,6 @@
 package br.com.nglauber.aula04_filmes;
 
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -37,10 +36,14 @@ public class MovieListFragment extends Fragment
     MovieAdapter mAdapter;
     List<Movie> mMoviesList;
     LoaderManager mLoaderManager;
+    OnMovieClickListener mMovieClickListener;
 
     public MovieListFragment() {
     }
 
+    public void setMovieClickListener(OnMovieClickListener mMovieClickListener) {
+        this.mMovieClickListener = mMovieClickListener;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,12 +51,12 @@ public class MovieListFragment extends Fragment
         setHasOptionsMenu(true);
         mMoviesList = new ArrayList<>();
         mAdapter = new MovieAdapter(getActivity(), mMoviesList);
-        mAdapter.setMovieClickListener(new MovieAdapter.OnMovieClickListener() {
+        mAdapter.setMovieClickListener(new OnMovieClickListener() {
             @Override
             public void onMovieClick(Movie movie, int position) {
-                Intent it = new Intent(getActivity(), DetailActivity.class);
-                it.putExtra(DetailActivity.EXTRA_ID, movie.getId());
-                startActivity(it);
+                if (mMovieClickListener != null){
+                    mMovieClickListener.onMovieClick(movie, position);
+                }
             }
         });
     }

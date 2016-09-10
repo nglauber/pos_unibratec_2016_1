@@ -62,9 +62,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.VH> {
         return mMovies.size();
     }
 
-    interface OnMovieClickListener {
-        void onMovieClick(Movie movie, int position);
-    }
+
 
     class VH extends RecyclerView.ViewHolder {
         ImageView imageViewPoster;
