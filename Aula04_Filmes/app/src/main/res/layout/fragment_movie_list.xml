@@ -5,9 +5,8 @@
     android:layout_height="match_parent"
     tools:context="br.com.nglauber.aula04_filmes.MainActivity">
 
-    <fragment
-        android:id="@+id/fragmentList"
-        android:name="br.com.nglauber.aula04_filmes.MovieListFragment"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/main_recycler_movies"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </RelativeLayout>
