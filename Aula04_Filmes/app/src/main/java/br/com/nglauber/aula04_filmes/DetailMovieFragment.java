@@ -64,15 +64,6 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
         txtActors   = (TextView)view.findViewById(R.id.detail_text_actors);
         rating      = (RatingBar)view.findViewById(R.id.detail_rating);
 
-//        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
         mMovieId = getArguments().getString(EXTRA_MOVIE_ID);
         getActivity().getSupportLoaderManager().restartLoader(1, null, this);
 
