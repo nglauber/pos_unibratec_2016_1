@@ -43,9 +43,6 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
         return detailMovieFragment;
     }
 
-    public DetailMovieFragment() {
-    }
-
     public void setMovieLoadedListener(OnMovieLoadedListener l) {
         this.mMovieLoadedListener = l;
     }
@@ -65,7 +62,7 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
         rating      = (RatingBar)view.findViewById(R.id.detail_rating);
 
         mMovieId = getArguments().getString(EXTRA_MOVIE_ID);
-        getActivity().getSupportLoaderManager().restartLoader(1, null, this);
+        getLoaderManager().initLoader(1, null, this);
 
         return view;
     }
@@ -100,7 +97,6 @@ public class DetailMovieFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onLoaderReset(Loader<Movie> loader) {
-
     }
 
     interface OnMovieLoadedListener {

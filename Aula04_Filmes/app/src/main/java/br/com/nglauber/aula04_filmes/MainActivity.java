@@ -18,14 +18,40 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MoviesPagerAdapter pagerAdapter = new MoviesPagerAdapter(getSupportFragmentManager());
+        if (getResources().getBoolean(R.bool.phone)) {
+            MoviesPagerAdapter pagerAdapter = new MoviesPagerAdapter(getSupportFragmentManager());
 
-        ViewPager viewPager = (ViewPager)findViewById(R.id.pager);
-        viewPager.setAdapter(pagerAdapter);
+            ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+            viewPager.setAdapter(pagerAdapter);
 
-        TabLayout tabLayout = (TabLayout)findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
+            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+            tabLayout.setupWithViewPager(viewPager);
+        } else {
+            MovieListFragment movieListFragment = (MovieListFragment)
+                    getSupportFragmentManager().findFragmentById(R.id.fragmentList);
+            movieListFragment.setMovieClickListener(mMovieClickListener);
+        }
     }
+
+    private OnMovieClickListener mMovieClickListener = new OnMovieClickListener() {
+        @Override
+        public void onMovieClick(Movie movie, int position) {
+            if (getResources().getBoolean(R.bool.phone)) {
+                // Phone
+                Intent it = new Intent(MainActivity.this, DetailActivity.class);
+                it.putExtra(DetailActivity.EXTRA_ID, movie.getId());
+                startActivity(it);
+            } else {
+                // Tablet
+                DetailMovieFragment detailMovieFragment =
+                        DetailMovieFragment.newInstance(movie.getId());
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.placeholderDetail, detailMovieFragment)
+                        .commit();
+            }
+        }
+    };
 
     class MoviesPagerAdapter extends FragmentPagerAdapter {
         public MoviesPagerAdapter(FragmentManager fm) {
@@ -35,25 +61,7 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             if (position == 0){
                 MovieListFragment movieListFragment = new MovieListFragment();
-                movieListFragment.setMovieClickListener(new OnMovieClickListener() {
-                    @Override
-                    public void onMovieClick(Movie movie, int position) {
-                        if (getResources().getBoolean(R.bool.phone)) {
-                            // Phone
-                            Intent it = new Intent(MainActivity.this, DetailActivity.class);
-                            it.putExtra(DetailActivity.EXTRA_ID, movie.getId());
-                            startActivity(it);
-                        } else {
-                            // Tablet
-                            DetailMovieFragment detailMovieFragment =
-                                    DetailMovieFragment.newInstance(movie.getId());
-                            getSupportFragmentManager()
-                                    .beginTransaction()
-                                    .replace(R.id.placeholderDetail, detailMovieFragment)
-                                    .commit();
-                        }
-                    }
-                });
+                movieListFragment.setMovieClickListener(mMovieClickListener);
                 return movieListFragment;
             }
             else return new FavoriteMoviesFragment();

@@ -21,7 +21,7 @@ public class MovieByIdTask extends AsyncTaskLoader<Movie> {
     @Override
     protected void onStartLoading() {
         super.onStartLoading();
-        if (mMovie == null || mMovie.getId() != mId) {
+        if (mMovie == null || !mMovie.getId().equals(mId)) {
             forceLoad();
         } else {
             deliverResult(mMovie);
