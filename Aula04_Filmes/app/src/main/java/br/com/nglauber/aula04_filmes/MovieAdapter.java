@@ -65,8 +65,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.VH> {
         return mMovies.size();
     }
 
-
-
     class VH extends RecyclerView.ViewHolder {
         ImageView imageViewPoster;
         TextView textViewTitle;

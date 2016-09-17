@@ -47,7 +47,6 @@ public class FavoriteMoviesFragment extends Fragment
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_favorite_movies, container, false);
-
         ListView listView = (ListView) view.findViewById(R.id.favorites_list);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -66,10 +65,11 @@ public class FavoriteMoviesFragment extends Fragment
                 }
             }
         });
-
         mAdapter = new MovieCursorAdapter(getActivity(), null);
 
         listView.setAdapter(mAdapter);
+
+        listView.setEmptyView(view.findViewById(R.id.empty_view_root));
 
         getActivity().getSupportLoaderManager().initLoader(2, null, this);
 

@@ -87,7 +87,7 @@ public class DetailActivity extends AppCompatActivity {
                 toggleFavorite(mMovie.getImdbId());
 
                 Snackbar.make(view,
-                        isFavorite ? R.string.msg_added_favorites : R.string.msg_removed_favorites,
+                        isFavorite ? R.string.msg_removed_favorites : R.string.msg_added_favorites,
                         Snackbar.LENGTH_LONG)
                         .setAction(R.string.text_undo, this).show();
             }

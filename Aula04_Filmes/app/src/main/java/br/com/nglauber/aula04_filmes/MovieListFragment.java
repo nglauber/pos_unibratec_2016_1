@@ -37,6 +37,7 @@ public class MovieListFragment extends Fragment
     MovieAdapter mAdapter;
     List<Movie> mMoviesList;
     LoaderManager mLoaderManager;
+    View mEmptyView;
 
     public MovieListFragment() {
     }
@@ -65,7 +66,7 @@ public class MovieListFragment extends Fragment
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_movie_list, container, false);
-
+        mEmptyView = view.findViewById(R.id.empty_view_root);
         mRecyclerView = (RecyclerView)view.findViewById(R.id.main_recycler_movies);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -117,6 +118,9 @@ public class MovieListFragment extends Fragment
             mMoviesList.clear();
             mMoviesList.addAll(data);
             mAdapter.notifyDataSetChanged();
+            mEmptyView.setVisibility(View.GONE);
+        } else {
+            mEmptyView.setVisibility(View.VISIBLE);
         }
     }
 

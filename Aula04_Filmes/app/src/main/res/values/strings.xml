@@ -9,4 +9,5 @@
     <string name="msg_added_favorites">Added to favorites</string>
     <string name="msg_removed_favorites">Deleted from favorites</string>
     <string name="text_undo">Undo</string>
+    <string name="empty_text">No movies to be shown\n at the moment</string>
 </resources>
