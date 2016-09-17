@@ -18,7 +18,8 @@ import br.com.nglauber.aula04_filmes.model.Movie;
 
 public class DetailActivity extends AppCompatActivity {
 
-    public static final String EXTRA_ID = "imdb_id";
+    public static final String EXTRA_ID = "movie_id"; // vindo dos favoritos
+    public static final String EXTRA_IMDB_ID = "imdb_id"; // vindo da web
     private Movie mMovie;
 
     @Override
@@ -26,9 +27,18 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        String id = getIntent().getStringExtra(EXTRA_ID);
-        DetailMovieFragment detailMovieFragment =
-                DetailMovieFragment.newInstance(id);
+        String imdbId = getIntent().getStringExtra(EXTRA_IMDB_ID);
+        long id = getIntent().getLongExtra(EXTRA_ID, 0);
+
+        DetailMovieFragment detailMovieFragment;
+        if (id != 0){
+            // Favoritos
+            detailMovieFragment = DetailMovieFragment.newInstance(id);
+        } else {
+            // Busca da internet
+            detailMovieFragment = DetailMovieFragment.newInstance(imdbId);
+        }
+
         detailMovieFragment.setMovieLoadedListener(new DetailMovieFragment.OnMovieLoadedListener() {
             @Override
             public void onMovieLoaded(Movie movie) {
@@ -44,7 +54,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mMovie != null){
                     ContentValues contentValues = new ContentValues();
-                    contentValues.put(MovieContract.COL_IMDB_ID , mMovie.getId());
+                    contentValues.put(MovieContract.COL_IMDB_ID , mMovie.getImdbId());
                     contentValues.put(MovieContract.COL_TITLE   , mMovie.getTitle());
                     contentValues.put(MovieContract.COL_YEAR    , mMovie.getYear());
                     contentValues.put(MovieContract.COL_POSTER  , mMovie.getPoster());

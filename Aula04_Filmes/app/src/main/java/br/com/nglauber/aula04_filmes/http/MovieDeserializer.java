@@ -21,7 +21,7 @@ public class MovieDeserializer implements JsonDeserializer<Movie> {
         try {
             JsonObject jsonObject = (JsonObject) json;
             Movie movie = new Movie();
-            movie.setId(jsonObject.get("imdbID").getAsString());
+            movie.setImdbId(jsonObject.get("imdbID").getAsString());
             movie.setTitle(jsonObject.get("Title").getAsString());
             movie.setYear(jsonObject.get("Year").getAsString());
             movie.setPoster(jsonObject.get("Poster").getAsString());

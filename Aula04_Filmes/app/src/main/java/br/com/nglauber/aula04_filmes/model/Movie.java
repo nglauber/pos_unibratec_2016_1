@@ -6,8 +6,9 @@ import com.google.gson.annotations.SerializedName;
  * Created by nglauber on 9/3/16.
  */
 public class Movie {
+    long id;
     @SerializedName("imdbID")
-    private String id;
+    private String imdbId;
     @SerializedName("Title")
     private String   title;
     @SerializedName("Year")
@@ -27,12 +28,20 @@ public class Movie {
     @SerializedName("imdbRating")
     private float    rating;
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
+    }
+
+    public String getImdbId() {
+        return imdbId;
+    }
+
+    public void setImdbId(String id) {
+        this.imdbId = id;
     }
 
     public String getTitle() {

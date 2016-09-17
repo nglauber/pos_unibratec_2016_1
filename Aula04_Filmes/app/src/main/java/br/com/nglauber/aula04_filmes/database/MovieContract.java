@@ -29,4 +29,11 @@ public interface MovieContract extends BaseColumns {
             COL_RUNTIME ,
             COL_RATING  ,
     };
+    String[] LIST_COLUMNS = new String[]{
+            MovieContract._ID,
+            MovieContract.COL_IMDB_ID,
+            MovieContract.COL_TITLE,
+            MovieContract.COL_POSTER,
+            MovieContract.COL_YEAR
+    };
 }

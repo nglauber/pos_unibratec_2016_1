@@ -18,7 +18,7 @@ public class MovieCursorAdapter extends SimpleCursorAdapter {
     private static final int LAYOUT = R.layout.item_movie;
 
     public MovieCursorAdapter(Context context, Cursor c) {
-        super(context, LAYOUT, c, MovieContract.ALL_COLUMNS, null, 0);
+        super(context, LAYOUT, c, MovieContract.LIST_COLUMNS, null, 0);
     }
 
     @Override

@@ -40,11 +40,12 @@ public class MainActivity extends AppCompatActivity {
                 // Phone
                 Intent it = new Intent(MainActivity.this, DetailActivity.class);
                 it.putExtra(DetailActivity.EXTRA_ID, movie.getId());
+                it.putExtra(DetailActivity.EXTRA_IMDB_ID, movie.getImdbId());
                 startActivity(it);
             } else {
                 // Tablet
                 DetailMovieFragment detailMovieFragment =
-                        DetailMovieFragment.newInstance(movie.getId());
+                        DetailMovieFragment.newInstance(movie.getImdbId());
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.placeholderDetail, detailMovieFragment)
@@ -59,16 +60,19 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         public Fragment getItem(int position) {
-            if (position == 0){
+            if (position == 1){
                 MovieListFragment movieListFragment = new MovieListFragment();
                 movieListFragment.setMovieClickListener(mMovieClickListener);
                 return movieListFragment;
+            } else {
+                FavoriteMoviesFragment favoriteMoviesFragment = new FavoriteMoviesFragment();
+                favoriteMoviesFragment.setMovieClickListener(mMovieClickListener);
+                return favoriteMoviesFragment;
             }
-            else return new FavoriteMoviesFragment();
         }
         @Override
         public CharSequence getPageTitle(int position) {
-            if (position == 0) return getString(R.string.tab_search);
+            if (position == 1) return getString(R.string.tab_search);
             else return getString(R.string.tab_favorites);
         }
         @Override
