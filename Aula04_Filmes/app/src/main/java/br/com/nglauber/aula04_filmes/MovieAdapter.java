@@ -52,7 +52,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.VH> {
     @Override
     public void onBindViewHolder(VH holder, int position) {
         Movie movie = mMovies.get(position);
-        Glide.with(mContext).load(movie.getPoster()).into(holder.imageViewPoster);
+        Glide.with(mContext)
+                .load(movie.getPoster())
+                .placeholder(R.drawable.ic_placeholder)
+                .into(holder.imageViewPoster);
         holder.textViewTitle.setText(movie.getTitle());
         holder.textViewYear.setText(movie.getYear());
     }

@@ -7,6 +7,10 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/favorites_list"/>
+        android:id="@+id/favorites_list"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="16dp"
+        android:padding="8dp"
+        android:clipToPadding="false"/>
 
 </FrameLayout>

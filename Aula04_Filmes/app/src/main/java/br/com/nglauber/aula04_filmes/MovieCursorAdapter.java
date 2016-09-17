@@ -36,7 +36,10 @@ public class MovieCursorAdapter extends SimpleCursorAdapter {
         String title = cursor.getString(cursor.getColumnIndex(MovieContract.COL_TITLE));
         String year = cursor.getString(cursor.getColumnIndex(MovieContract.COL_YEAR));
 
-        Glide.with(context).load(poster).into(imageViewPoster);
+        Glide.with(context)
+                .load(poster)
+                .placeholder(R.drawable.ic_placeholder)
+                .into(imageViewPoster);
         textViewTitle.setText(title);
         textViewYear.setText(year);
     }

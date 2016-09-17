@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import br.com.nglauber.aula04_filmes.model.Movie;
 
@@ -17,6 +18,9 @@ public class MainActivity extends AppCompatActivity implements OnMovieClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         if (getResources().getBoolean(R.bool.phone)) {
             MoviesPagerAdapter pagerAdapter = new MoviesPagerAdapter(getSupportFragmentManager());
