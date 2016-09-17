@@ -1,6 +1,7 @@
 package br.com.nglauber.aula04_filmes;
 
 
+import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -36,13 +37,8 @@ public class MovieListFragment extends Fragment
     MovieAdapter mAdapter;
     List<Movie> mMoviesList;
     LoaderManager mLoaderManager;
-    OnMovieClickListener mMovieClickListener;
 
     public MovieListFragment() {
-    }
-
-    public void setMovieClickListener(OnMovieClickListener mMovieClickListener) {
-        this.mMovieClickListener = mMovieClickListener;
     }
 
     @Override
@@ -54,8 +50,11 @@ public class MovieListFragment extends Fragment
         mAdapter.setMovieClickListener(new OnMovieClickListener() {
             @Override
             public void onMovieClick(Movie movie, int position) {
-                if (mMovieClickListener != null){
-                    mMovieClickListener.onMovieClick(movie, position);
+                // Nessa abordagem o click é mais lento,
+                // mas não precisamos usar um atributo adicional
+                Activity activity = getActivity();
+                if (activity instanceof OnMovieClickListener){
+                    ((OnMovieClickListener)activity).onMovieClick(movie, position);
                 }
             }
         });

@@ -1,6 +1,7 @@
 package br.com.nglauber.aula04_filmes;
 
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,6 +30,16 @@ public class FavoriteMoviesFragment extends Fragment
 
     public void setMovieClickListener(OnMovieClickListener mMovieClickListener) {
         this.mMovieClickListener = mMovieClickListener;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        // Essa abordagem é mais usada, e mais rápida
+        // entretanto requer um atributo adicional
+        if (context instanceof OnMovieClickListener) {
+            mMovieClickListener = (OnMovieClickListener) context;
+        }
     }
 
     @Override

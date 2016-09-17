@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import br.com.nglauber.aula04_filmes.model.Movie;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnMovieClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,30 +29,27 @@ public class MainActivity extends AppCompatActivity {
         } else {
             MovieListFragment movieListFragment = (MovieListFragment)
                     getSupportFragmentManager().findFragmentById(R.id.fragmentList);
-            movieListFragment.setMovieClickListener(mMovieClickListener);
         }
     }
 
-    private OnMovieClickListener mMovieClickListener = new OnMovieClickListener() {
-        @Override
-        public void onMovieClick(Movie movie, int position) {
-            if (getResources().getBoolean(R.bool.phone)) {
-                // Phone
-                Intent it = new Intent(MainActivity.this, DetailActivity.class);
-                it.putExtra(DetailActivity.EXTRA_ID, movie.getId());
-                it.putExtra(DetailActivity.EXTRA_IMDB_ID, movie.getImdbId());
-                startActivity(it);
-            } else {
-                // Tablet
-                DetailMovieFragment detailMovieFragment =
-                        DetailMovieFragment.newInstance(movie.getImdbId());
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.placeholderDetail, detailMovieFragment)
-                        .commit();
-            }
+    @Override
+    public void onMovieClick(Movie movie, int position) {
+        if (getResources().getBoolean(R.bool.phone)) {
+            // Phone
+            Intent it = new Intent(MainActivity.this, DetailActivity.class);
+            it.putExtra(DetailActivity.EXTRA_ID, movie.getId());
+            it.putExtra(DetailActivity.EXTRA_IMDB_ID, movie.getImdbId());
+            startActivity(it);
+        } else {
+            // Tablet
+            DetailMovieFragment detailMovieFragment =
+                    DetailMovieFragment.newInstance(movie.getImdbId());
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.placeholderDetail, detailMovieFragment)
+                    .commit();
         }
-    };
+    }
 
     class MoviesPagerAdapter extends FragmentPagerAdapter {
         public MoviesPagerAdapter(FragmentManager fm) {
@@ -62,11 +59,9 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             if (position == 1){
                 MovieListFragment movieListFragment = new MovieListFragment();
-                movieListFragment.setMovieClickListener(mMovieClickListener);
                 return movieListFragment;
             } else {
                 FavoriteMoviesFragment favoriteMoviesFragment = new FavoriteMoviesFragment();
-                favoriteMoviesFragment.setMovieClickListener(mMovieClickListener);
                 return favoriteMoviesFragment;
             }
         }
