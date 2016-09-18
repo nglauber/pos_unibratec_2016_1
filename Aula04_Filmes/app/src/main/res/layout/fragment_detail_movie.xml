@@ -6,6 +6,15 @@
     android:orientation="vertical"
     android:padding="@dimen/activity_horizontal_margin">
 
+    <!-- ImageView apenas para tablets -->
+    <ImageView
+        android:id="@+id/detail_image_poster"
+        android:layout_width="144dp"
+        android:layout_height="192dp"
+        android:gravity="center"
+        android:scaleType="centerCrop"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/detail_text_title"
         android:layout_width="wrap_content"

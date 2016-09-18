@@ -14,9 +14,6 @@ import java.util.List;
 
 import br.com.nglauber.aula04_filmes.model.Movie;
 
-/**
- * Created by nglauber on 9/3/16.
- */
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.VH> {
 
     private List<Movie> mMovies;

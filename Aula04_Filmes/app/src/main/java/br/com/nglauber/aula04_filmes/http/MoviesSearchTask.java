@@ -8,6 +8,7 @@ import java.util.List;
 
 import br.com.nglauber.aula04_filmes.model.Movie;
 
+// Essa tarefa carrega a lista dos filmes baseado nos parâmetros da busca
 public class MoviesSearchTask extends AsyncTaskLoader<List<Movie>> {
     List<Movie> movies;
     String query;

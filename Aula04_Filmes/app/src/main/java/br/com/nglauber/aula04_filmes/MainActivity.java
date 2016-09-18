@@ -1,18 +1,28 @@
 package br.com.nglauber.aula04_filmes;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import br.com.nglauber.aula04_filmes.model.Movie;
 
 public class MainActivity extends AppCompatActivity implements OnMovieClickListener {
+
+    FloatingActionButton fab;
+    LocalBroadcastManager mLocalBroadcastManager;
+    MovieReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,32 +32,51 @@ public class MainActivity extends AppCompatActivity implements OnMovieClickListe
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (getResources().getBoolean(R.bool.phone)) {
-            MoviesPagerAdapter pagerAdapter = new MoviesPagerAdapter(getSupportFragmentManager());
+        // Inicializando o PagerAdapter, ViewPager e TabLayout para exibir as abas
+        MoviesPagerAdapter pagerAdapter = new MoviesPagerAdapter(getSupportFragmentManager());
 
-            ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-            viewPager.setAdapter(pagerAdapter);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager.setAdapter(pagerAdapter);
 
-            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-            tabLayout.setupWithViewPager(viewPager);
-        } else {
-            MovieListFragment movieListFragment = (MovieListFragment)
-                    getSupportFragmentManager().findFragmentById(R.id.fragmentList);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
+        // Definimos alguns comportamentos especiais para tablets...
+        if (getResources().getBoolean(R.bool.tablet)){
+            // As abas ficam alinhadas a esquerda
+            tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+
+            // Inicializamos esse receiver para saber quando o filme no fragment de detalhe
+            // foi carregado (ver método notifyUpdate da DetailMovieFragment)
+            mReceiver = new MovieReceiver();
+            mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+            mLocalBroadcastManager.registerReceiver(mReceiver, new IntentFilter(MovieEvent.MOVIE_LOADED));
+            mLocalBroadcastManager.registerReceiver(mReceiver, new IntentFilter(MovieEvent.MOVIE_FAVORITE_UPDATED));
+
+            // O FAB envia a mensagem para o DetailFragment inserir/excluir filme no banco
+            fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent it = new Intent(MovieEvent.UPDATE_FAVORITE);
+                    mLocalBroadcastManager.sendBroadcast(it);
+                }
+            });
         }
     }
 
     @Override
     public void onMovieClick(Movie movie, int position) {
+        // Esse método é chamado pelas telas de listagem quando o usuário
+        // clica em um item da lista (ver MovieListFragment e FavoriteMoviesFragment)
         if (getResources().getBoolean(R.bool.phone)) {
-            // Phone
+            // Se for smartphone, abra uma nova activity
             Intent it = new Intent(MainActivity.this, DetailActivity.class);
-            it.putExtra(DetailActivity.EXTRA_ID, movie.getId());
-            it.putExtra(DetailActivity.EXTRA_IMDB_ID, movie.getImdbId());
+            it.putExtra(DetailActivity.EXTRA_MOVIE, movie);
             startActivity(it);
         } else {
-            // Tablet
-            DetailMovieFragment detailMovieFragment =
-                    DetailMovieFragment.newInstance(movie.getImdbId());
+            // Se for tablet, exiba um fragment a direita
+            DetailMovieFragment detailMovieFragment = DetailMovieFragment.newInstance(movie);
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.placeholderDetail, detailMovieFragment)
@@ -55,6 +84,18 @@ public class MainActivity extends AppCompatActivity implements OnMovieClickListe
         }
     }
 
+    // Esse receiver será chamado quando o fragment de detalhe carrega os dados do filme
+    // (ver método notifyUpdate de DetailMovieFragment)
+    class MovieReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Movie movie = (Movie)intent.getSerializableExtra(MovieEvent.EXTRA_MOVIE);
+            fab.setVisibility(View.VISIBLE);
+            MovieDetailUtils.toggleFavorite(context, fab, movie.getImdbId());
+        }
+    }
+
+    // O PagerAdapter é o que determina o que será exibido em cada aba
     class MoviesPagerAdapter extends FragmentPagerAdapter {
         public MoviesPagerAdapter(FragmentManager fm) {
             super(fm);

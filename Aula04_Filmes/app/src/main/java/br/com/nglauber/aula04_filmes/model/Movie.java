@@ -2,11 +2,11 @@ package br.com.nglauber.aula04_filmes.model;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by nglauber on 9/3/16.
- */
-public class Movie {
-    long id;
+import java.io.Serializable;
+
+//TODO Utilizar Parcelable ou o Parceler
+public class Movie implements Serializable {
+    private long id;
     @SerializedName("imdbID")
     private String imdbId;
     @SerializedName("Title")

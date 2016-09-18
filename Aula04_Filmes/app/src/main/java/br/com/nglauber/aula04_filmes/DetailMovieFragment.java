@@ -1,19 +1,31 @@
 package br.com.nglauber.aula04_filmes;
 
 
+import android.content.BroadcastReceiver;
 import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+
+import java.util.Arrays;
 
 import br.com.nglauber.aula04_filmes.database.MovieContract;
 import br.com.nglauber.aula04_filmes.database.MoviesProvider;
@@ -23,8 +35,9 @@ import br.com.nglauber.aula04_filmes.model.Movie;
 
 public class DetailMovieFragment extends Fragment {
 
-    private static final String EXTRA_MOVIE_IMDB_ID = "imdbId";
-    private static final String EXTRA_MOVIE_ID = "movieId";
+    private static final String EXTRA_MOVIE = "movie";
+    private static final int LOADER_DB = 0;
+    private static final int LOADER_WEB = 1;
 
     ImageView imgPoster;
     TextView  txtTitle;
@@ -36,37 +49,24 @@ public class DetailMovieFragment extends Fragment {
     TextView  txtActors;
     RatingBar rating;
 
-    long mMovieId;
-    String mImdbId;
+    Movie mMovie;
+    LocalBroadcastManager mLocalBroadcastManager;
+    MovieEventReceiver mReceiver;
 
-    OnMovieLoadedListener mMovieLoadedListener;
-
-    // Web
-    public static DetailMovieFragment newInstance(String id) {
+    // Para criarmos um DetailMovieFragment precisamos passar um objeto Movie
+    public static DetailMovieFragment newInstance(Movie movie) {
         Bundle args = new Bundle();
-        args.putString(EXTRA_MOVIE_IMDB_ID, id);
+        args.putSerializable(EXTRA_MOVIE, movie);
 
         DetailMovieFragment detailMovieFragment = new DetailMovieFragment();
         detailMovieFragment.setArguments(args);
         return detailMovieFragment;
-    }
-    // Local (Favoritos)
-    public static DetailMovieFragment newInstance(long id) {
-        Bundle args = new Bundle();
-        args.putLong(EXTRA_MOVIE_ID, id);
-
-        DetailMovieFragment detailMovieFragment = new DetailMovieFragment();
-        detailMovieFragment.setArguments(args);
-        return detailMovieFragment;
-    }
-
-    public void setMovieLoadedListener(OnMovieLoadedListener l) {
-        this.mMovieLoadedListener = l;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inicializando o layout do fragment...
         View view = inflater.inflate(R.layout.fragment_detail_movie, container, false);
         imgPoster   = (ImageView)view.findViewById(R.id.detail_image_poster);
         txtTitle    = (TextView)view.findViewById(R.id.detail_text_title);
@@ -78,21 +78,57 @@ public class DetailMovieFragment extends Fragment {
         txtActors   = (TextView)view.findViewById(R.id.detail_text_actors);
         rating      = (RatingBar)view.findViewById(R.id.detail_rating);
 
-        mMovieId = getArguments().getLong(EXTRA_MOVIE_ID);
-        mImdbId = getArguments().getString(EXTRA_MOVIE_IMDB_ID);
-        if (mMovieId > 0){
-            getLoaderManager().initLoader(1, null, mCursorCallback);
+        // Inicializamos mMovie (ver onSaveInsatnceState)
+        if (savedInstanceState == null){
+            // Se não tem um estado anterior, use o que foi passado no método newInstance.
+            mMovie = (Movie)getArguments().getSerializable(EXTRA_MOVIE);
         } else {
-            getLoaderManager().initLoader(2, null, mMovieCallback);
+            // Se há um estado anterior, use-o
+            mMovie = (Movie)savedInstanceState.getSerializable(EXTRA_MOVIE);
         }
+
+        // Se o objeto mMovie possui um ID (no banco local), carregue do banco local,
+        // senão carregue do servidor.
+        if (mMovie.getId() > 0){
+            // Faz a requisição em background ao banco de dados (ver mCursorCallback)
+            getLoaderManager().initLoader(LOADER_DB, null, mCursorCallback);
+        } else {
+            // Faz a requisição em background ao servidor (ver mMovieCallback)
+            getLoaderManager().initLoader(LOADER_WEB, null, mMovieCallback);
+        }
+
+        // Registramos o receiver para tratar sabermos quando o botão de favoritos da
+        // activity de detalhes foi chamado.
+        mReceiver = new MovieEventReceiver();
+        mLocalBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
+        mLocalBroadcastManager.registerReceiver(mReceiver, new IntentFilter(MovieEvent.UPDATE_FAVORITE));
 
         return view;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Precisamos manter o objeto mMovie atualizado pois ele pode ter sido
+        // incluído e excluído dos favoritos.
+        outState.putSerializable(EXTRA_MOVIE, mMovie);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Desregistramos o receiver ao destruir a View do fragment
+        mLocalBroadcastManager.unregisterReceiver(mReceiver);
+    }
+
+    // --------------- LoaderManager.LoaderCallbacks<Movie>
+    // Esse callback trata o retorno da requisição feita ao servidor
     LoaderManager.LoaderCallbacks mMovieCallback = new LoaderManager.LoaderCallbacks<Movie>() {
         @Override
         public Loader<Movie> onCreateLoader(int id, Bundle args) {
-            return new MovieByIdTask(getActivity(), mImdbId);
+            // inicializa a requisição em background para o servidor usando AsyncTaskLoader
+            // (veja a classe MovieByIdTask)
+            return new MovieByIdTask(getActivity(), mMovie.getImdbId());
         }
 
         @Override
@@ -105,19 +141,27 @@ public class DetailMovieFragment extends Fragment {
         }
     };
 
+    // --------------- LoaderManager.LoaderCallbacks<Cursor>
+    // Esse callback trata o retorno da requisição feita ao servidor
     LoaderManager.LoaderCallbacks<Cursor> mCursorCallback = new LoaderManager.LoaderCallbacks<Cursor>(){
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            // inicializa a requisição em background para o ContentProvider usando CursorLoader
+            // perceba que estamos utilizando a Uri específica
+            // (veja o método query do MovieProvider)
             return new CursorLoader(getActivity(),
-                    ContentUris.withAppendedId(MoviesProvider.MOVIES_URI, mMovieId),
+                    ContentUris.withAppendedId(MoviesProvider.MOVIES_URI, mMovie.getId()),
                     null, null, null, null);
         }
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+            // Ao receber o retorno do cursor, criamos um objeto Movie e preenchemos a tela
+            // (ver updateUI)
             if (cursor != null && cursor.moveToFirst()) {
                 Movie movie = new Movie();
+                movie.setId(cursor.getLong(cursor.getColumnIndex(MovieContract._ID)));
                 movie.setImdbId(cursor.getString(cursor.getColumnIndex(MovieContract.COL_IMDB_ID)));
                 movie.setTitle(cursor.getString(cursor.getColumnIndex(MovieContract.COL_TITLE)));
                 movie.setPoster(cursor.getString(cursor.getColumnIndex(MovieContract.COL_POSTER)));
@@ -134,11 +178,28 @@ public class DetailMovieFragment extends Fragment {
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
-
         }
     };
 
+    // --------------- INNER
+    // Esse receiver é chamado pelo FAB da DetailActivity para iniciar o processo
+    // de inserir/excluir o movie nos favoritos
+    class MovieEventReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (intent.getAction().equals(MovieEvent.UPDATE_FAVORITE)) {
+                toggleFavorite();
+            }
+        }
+    }
+
+    // --------------- PRIVATE
+
     private void updateUI(Movie movie){
+        // Atualiza o objeto mMovie com os dados vindos dos callbacks
+        // (ver mCursorCallback e mMovieCallback)
+        mMovie = movie;
         txtTitle.setText(movie.getTitle());
         txtYear.setText(movie.getYear());
         txtGenre.setText(movie.getGenre());
@@ -147,6 +208,9 @@ public class DetailMovieFragment extends Fragment {
         txtRuntime.setText(movie.getRuntime());
         rating.setRating(movie.getRating() / 2);
 
+        // Tanto no JSON quanto no Banco, estamos salvando a lista
+        // de atores separado por vírgula
+        //TODO Criar uma nova tabela e fazer chave estrangeira
         StringBuffer sb = new StringBuffer();
         for (String actor :
                 movie.getActors()) {
@@ -154,13 +218,92 @@ public class DetailMovieFragment extends Fragment {
         }
         txtActors.setText(sb.toString());
 
-        // atualizar imagem da capa
-        if (mMovieLoadedListener != null) {
-            mMovieLoadedListener.onMovieLoaded(movie);
+        // Enviando mensagem para todos que querem saber que o filme carregou
+        // (ver DetailActivity.MovieReceiver)
+        notifyUpdate(MovieEvent.MOVIE_LOADED);
+
+        // Quando estiver em tablet, exiba o poster no próprio fragment
+        if (getResources().getBoolean(R.bool.tablet)){
+            imgPoster.setVisibility(View.VISIBLE);
+            Glide.with(imgPoster.getContext()).load(movie.getPoster()).into(imgPoster);
         }
     }
 
-    interface OnMovieLoadedListener {
-        void onMovieLoaded(Movie movie);
+    // Método auxiliar que insere/remove o movie no banco de dados
+    private void toggleFavorite() {
+        if (mMovie == null) return; // isso não deve acontecer...
+
+        // Primeiro verificamos se o livro está no banco de dados
+        boolean isFavorite = MovieDetailUtils.isFavorite(getActivity(), mMovie.getImdbId());
+
+        boolean success = false;
+        if (isFavorite) {
+            // Se já é favorito, exclua
+            if (deleteFavorite(mMovie.getId())){
+                success = true;
+                mMovie.setId(0);
+                getLoaderManager().destroyLoader(LOADER_DB);
+            }
+            //TODO Mensagem de erro ao excluir
+
+        } else {
+            // Se não é favorito, inclua...
+            long id = insertFavorite(mMovie);
+            success = id > 0;
+            mMovie.setId(id);
+        }
+
+        // Se deu tudo certo...
+        if (success) {
+            // Envia a mensagem para as activities (para atualizar o FAB)
+            notifyUpdate(MovieEvent.MOVIE_FAVORITE_UPDATED);
+
+            // Exibe o snackbar que permite o "desfazer"
+            //TODO Internailizar a aplicação
+            Snackbar.make(getView(),
+                    isFavorite ? R.string.msg_removed_favorites : R.string.msg_added_favorites,
+                    Snackbar.LENGTH_LONG)
+                    .setAction(R.string.text_undo, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            toggleFavorite();
+                        }
+                    }).show();
+        }
+    }
+
+    private void notifyUpdate(String action){
+        // Cria a intent e dispara o broadcast
+        Intent it = new Intent(action);
+        it.putExtra(MovieEvent.EXTRA_MOVIE, mMovie);
+        mLocalBroadcastManager.sendBroadcast(it);
+    }
+
+    // Método auxiliar para excluir nos favoritos
+    //TODO fazer delete em background
+    private boolean deleteFavorite(long movieId){
+        return getActivity().getContentResolver().delete(
+                ContentUris.withAppendedId(MoviesProvider.MOVIES_URI, movieId),
+                null, null) > 0;
+    }
+
+    // Método auxiliar para inserir nos favoritos
+    //TODO fazer insert em background
+    private long insertFavorite(Movie movie){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MovieContract.COL_IMDB_ID , movie.getImdbId());
+        contentValues.put(MovieContract.COL_TITLE   , movie.getTitle());
+        contentValues.put(MovieContract.COL_YEAR    , movie.getYear());
+        contentValues.put(MovieContract.COL_POSTER  , movie.getPoster());
+        contentValues.put(MovieContract.COL_GENRE   , movie.getGenre());
+        contentValues.put(MovieContract.COL_DIRECTOR, movie.getDirector());
+        contentValues.put(MovieContract.COL_PLOT    , movie.getPlot());
+        contentValues.put(MovieContract.COL_ACTORS  , Arrays.toString(movie.getActors()));
+        contentValues.put(MovieContract.COL_RUNTIME , movie.getRuntime());
+        contentValues.put(MovieContract.COL_RATING  , movie.getRating());
+
+        Uri uri = getActivity().getContentResolver().insert(MoviesProvider.MOVIES_URI, contentValues);
+        //TODO mensagem de erro ao falhar
+        return ContentUris.parseId(uri);
     }
 }

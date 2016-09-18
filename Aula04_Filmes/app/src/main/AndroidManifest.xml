@@ -34,7 +34,7 @@
             android:name=".database.MoviesProvider"
             android:authorities="br.com.nglauber.movies"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 
 </manifest>

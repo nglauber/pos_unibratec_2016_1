@@ -5,9 +5,7 @@ import android.support.v4.content.AsyncTaskLoader;
 
 import br.com.nglauber.aula04_filmes.model.Movie;
 
-/**
- * Created by nglauber on 9/3/16.
- */
+// Essa tarefa está carregando as informações do filme baseado no ID do imdb
 public class MovieByIdTask extends AsyncTaskLoader<Movie> {
 
     private Movie mMovie;

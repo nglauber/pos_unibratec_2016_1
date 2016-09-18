@@ -25,17 +25,11 @@ public class FavoriteMoviesFragment extends Fragment
     OnMovieClickListener mMovieClickListener;
     MovieCursorAdapter mAdapter;
 
-    public FavoriteMoviesFragment() {
-    }
-
-    public void setMovieClickListener(OnMovieClickListener mMovieClickListener) {
-        this.mMovieClickListener = mMovieClickListener;
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        // Essa abordagem é mais usada, e mais rápida
+        // Registrando o listener para saber quando movie foi clicado
+        // Essa abordagem é a mais usada, e mais rápida
         // entretanto requer um atributo adicional
         if (context instanceof OnMovieClickListener) {
             mMovieClickListener = (OnMovieClickListener) context;
@@ -52,8 +46,13 @@ public class FavoriteMoviesFragment extends Fragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (mMovieClickListener != null) {
+                    // Pegamos o cursor do adapter
                     Cursor cursor = mAdapter.getCursor();
+                    // Movemos para a posição correspondente da lista
                     if (cursor.moveToPosition(position)) {
+                        // Criamos um objeto Movie para passamos para a MainActivity
+                        // perceba que esse Movie não tem todos os campos. Pois na tela
+                        // de listagem apenas os campos necessários são utilizados
                         Movie movie = new Movie();
                         movie.setId(cursor.getLong(cursor.getColumnIndex(MovieContract._ID)));
                         movie.setImdbId(cursor.getString(cursor.getColumnIndex(MovieContract.COL_IMDB_ID)));
@@ -65,19 +64,23 @@ public class FavoriteMoviesFragment extends Fragment
                 }
             }
         });
-        mAdapter = new MovieCursorAdapter(getActivity(), null);
 
+        // Inicializamos e definimos o adapter da lista
+        mAdapter = new MovieCursorAdapter(getActivity(), null);
         listView.setAdapter(mAdapter);
 
+        // Definimos a view a ser exibida se a lista estiver vazia
         listView.setEmptyView(view.findViewById(R.id.empty_view_root));
 
-        getActivity().getSupportLoaderManager().initLoader(2, null, this);
+        // Inicializamos o loader para trazer os registros em background
+        getLoaderManager().initLoader(0, null, this);
 
         return view;
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // Realizando a query em bacground (ver método query do MovieProvider)
         return new CursorLoader(getActivity(),
                 MoviesProvider.MOVIES_URI,
                 MovieContract.LIST_COLUMNS, null, null, null);

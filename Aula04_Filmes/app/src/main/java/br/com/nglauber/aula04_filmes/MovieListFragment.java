@@ -33,14 +33,12 @@ public class MovieListFragment extends Fragment
     private static final String QUERY_PARAM = "param";
     public static final int LOADER_ID = 0;
 
+    SearchView mSearchView;
     RecyclerView mRecyclerView;
     MovieAdapter mAdapter;
     List<Movie> mMoviesList;
     LoaderManager mLoaderManager;
     View mEmptyView;
-
-    public MovieListFragment() {
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,10 +66,11 @@ public class MovieListFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_movie_list, container, false);
         mEmptyView = view.findViewById(R.id.empty_view_root);
         mRecyclerView = (RecyclerView)view.findViewById(R.id.main_recycler_movies);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        } else {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
+                && getResources().getBoolean(R.bool.phone)) {
             mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        } else {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         }
         mRecyclerView.setAdapter(mAdapter);
 
@@ -87,8 +86,8 @@ public class MovieListFragment extends Fragment
         inflater.inflate(R.menu.menu_search, menu);
 
         MenuItem searchItem = menu.findItem(R.id.search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setOnQueryTextListener(this);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        mSearchView.setOnQueryTextListener(this);
     }
 
     // ---- OnQueryTextListener
@@ -97,6 +96,7 @@ public class MovieListFragment extends Fragment
         Bundle params = new Bundle();
         params.putString(QUERY_PARAM, query);
         mLoaderManager.restartLoader(LOADER_ID, params, this);
+        mSearchView.clearFocus();
         return true;
     }
 

@@ -10,10 +10,10 @@ import java.lang.reflect.Type;
 
 import br.com.nglauber.aula04_filmes.model.Movie;
 
-/**
- * Created by nglauber on 9/3/16.
- */
+// Classe que customiza o GSON para fazer a leitura do JSON vindo do servidor.
+// Utilizada na classe MovieHttp
 public class MovieDeserializer implements JsonDeserializer<Movie> {
+
     @Override
     public Movie deserialize(JsonElement json,
                              Type typeOfT,
@@ -30,9 +30,7 @@ public class MovieDeserializer implements JsonDeserializer<Movie> {
             movie.setPlot(jsonObject.get("Plot").getAsString());
             movie.setActors(jsonObject.get("Actors").getAsString().split(","));
             movie.setRuntime(jsonObject.get("Runtime").getAsString());
-
-            String rating = jsonObject.get("imdbRating").getAsString();
-            if (isDouble(rating)) movie.setRating(Float.parseFloat(rating));
+            movie.setRating(asFloat(jsonObject.get("imdbRating").getAsString()));
 
             return movie;
 
@@ -42,12 +40,11 @@ public class MovieDeserializer implements JsonDeserializer<Movie> {
         }
     }
 
-    boolean isDouble(String str) {
+    float asFloat(String str) {
         try {
-            Double.parseDouble(str);
-            return true;
+            return Float.parseFloat(str);
         } catch (NumberFormatException e) {
-            return false;
+            return 0;
         }
     }
 }
