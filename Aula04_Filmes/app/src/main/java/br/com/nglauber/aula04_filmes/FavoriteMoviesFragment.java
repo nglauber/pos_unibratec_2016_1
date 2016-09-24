@@ -3,7 +3,10 @@ package br.com.nglauber.aula04_filmes;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -24,6 +27,7 @@ public class FavoriteMoviesFragment extends Fragment
 
     OnMovieClickListener mMovieClickListener;
     MovieCursorAdapter mAdapter;
+    boolean mFirstRun;
 
     @Override
     public void onAttach(Context context) {
@@ -34,6 +38,12 @@ public class FavoriteMoviesFragment extends Fragment
         if (context instanceof OnMovieClickListener) {
             mMovieClickListener = (OnMovieClickListener) context;
         }
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mFirstRun = savedInstanceState == null;
     }
 
     @Override
@@ -49,21 +59,13 @@ public class FavoriteMoviesFragment extends Fragment
                     // Pegamos o cursor do adapter
                     Cursor cursor = mAdapter.getCursor();
                     // Movemos para a posição correspondente da lista
-                    if (cursor.moveToPosition(position)) {
-                        // Criamos um objeto Movie para passamos para a MainActivity
-                        // perceba que esse Movie não tem todos os campos. Pois na tela
-                        // de listagem apenas os campos necessários são utilizados
-                        Movie movie = new Movie();
-                        movie.setId(cursor.getLong(cursor.getColumnIndex(MovieContract._ID)));
-                        movie.setImdbId(cursor.getString(cursor.getColumnIndex(MovieContract.COL_IMDB_ID)));
-                        movie.setTitle(cursor.getString(cursor.getColumnIndex(MovieContract.COL_TITLE)));
-                        movie.setPoster(cursor.getString(cursor.getColumnIndex(MovieContract.COL_POSTER)));
-                        movie.setYear(cursor.getString(cursor.getColumnIndex(MovieContract.COL_YEAR)));
-                        mMovieClickListener.onMovieClick(movie, position);
-                    }
+                    selectMovie(view, position, cursor);
                 }
             }
         });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            listView.setNestedScrollingEnabled(true);
+        }
 
         // Inicializamos e definimos o adapter da lista
         mAdapter = new MovieCursorAdapter(getActivity(), null);
@@ -78,6 +80,21 @@ public class FavoriteMoviesFragment extends Fragment
         return view;
     }
 
+    private void selectMovie(View view, int position, Cursor cursor) {
+        if (cursor.moveToPosition(position)) {
+            // Criamos um objeto Movie para passamos para a MainActivity
+            // perceba que esse Movie não tem todos os campos. Pois na tela
+            // de listagem apenas os campos necessários são utilizados
+            Movie movie = new Movie();
+            movie.setId(cursor.getLong(cursor.getColumnIndex(MovieContract._ID)));
+            movie.setImdbId(cursor.getString(cursor.getColumnIndex(MovieContract.COL_IMDB_ID)));
+            movie.setTitle(cursor.getString(cursor.getColumnIndex(MovieContract.COL_TITLE)));
+            movie.setPoster(cursor.getString(cursor.getColumnIndex(MovieContract.COL_POSTER)));
+            movie.setYear(cursor.getString(cursor.getColumnIndex(MovieContract.COL_YEAR)));
+            mMovieClickListener.onMovieClick(view, movie, position);
+        }
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Realizando a query em bacground (ver método query do MovieProvider)
@@ -87,8 +104,20 @@ public class FavoriteMoviesFragment extends Fragment
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader, final Cursor data) {
         mAdapter.swapCursor(data);
+        if (data != null
+                && data.getCount() > 0
+                && getResources().getBoolean(R.bool.tablet)
+                && mFirstRun){
+
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    selectMovie(null, 0, data);
+                }
+            });
+        }
     }
 
     @Override

@@ -10,13 +10,20 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -52,6 +59,8 @@ public class DetailMovieFragment extends Fragment {
     Movie mMovie;
     LocalBroadcastManager mLocalBroadcastManager;
     MovieEventReceiver mReceiver;
+    ShareActionProvider mShareActionProvider;
+    Intent mShareIntent;
 
     // Para criarmos um DetailMovieFragment precisamos passar um objeto Movie
     public static DetailMovieFragment newInstance(Movie movie) {
@@ -61,6 +70,12 @@ public class DetailMovieFragment extends Fragment {
         DetailMovieFragment detailMovieFragment = new DetailMovieFragment();
         detailMovieFragment.setArguments(args);
         return detailMovieFragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -77,6 +92,11 @@ public class DetailMovieFragment extends Fragment {
         txtRuntime  = (TextView)view.findViewById(R.id.detail_text_runtime);
         txtActors   = (TextView)view.findViewById(R.id.detail_text_actors);
         rating      = (RatingBar)view.findViewById(R.id.detail_rating);
+
+        // Animação de transição de tela
+        ViewCompat.setTransitionName(imgPoster, "capa");
+        ViewCompat.setTransitionName(txtTitle, "titulo");
+        ViewCompat.setTransitionName(txtYear, "ano");
 
         // Inicializamos mMovie (ver onSaveInsatnceState)
         if (savedInstanceState == null){
@@ -119,6 +139,18 @@ public class DetailMovieFragment extends Fragment {
         super.onDestroyView();
         // Desregistramos o receiver ao destruir a View do fragment
         mLocalBroadcastManager.unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_detail, menu);
+
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        if (mShareIntent != null){
+            mShareActionProvider.setShareIntent(mShareIntent);
+        }
     }
 
     // --------------- LoaderManager.LoaderCallbacks<Movie>
@@ -173,13 +205,23 @@ public class DetailMovieFragment extends Fragment {
                 movie.setRuntime(cursor.getString(cursor.getColumnIndex(MovieContract.COL_RUNTIME)));
                 movie.setRating(cursor.getFloat(cursor.getColumnIndex(MovieContract.COL_RATING)));
                 updateUI(movie);
+                createShareIntent(movie);
             }
+
+
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
         }
     };
+
+    private void createShareIntent(Movie movie) {
+        mShareIntent = new Intent(Intent.ACTION_SEND);
+        mShareIntent.setType("text/plain");
+        mShareIntent.putExtra(Intent.EXTRA_TEXT,
+                getString(R.string.share_text, movie.getTitle(), movie.getPlot()));
+    }
 
     // --------------- INNER
     // Esse receiver é chamado pelo FAB da DetailActivity para iniciar o processo

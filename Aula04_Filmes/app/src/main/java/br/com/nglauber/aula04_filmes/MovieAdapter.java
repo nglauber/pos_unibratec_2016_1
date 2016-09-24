@@ -1,6 +1,7 @@
 package br.com.nglauber.aula04_filmes;
 
 import android.content.Context;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +40,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.VH> {
             public void onClick(View view) {
                 int pos = viewHolder.getAdapterPosition();
                 if (mMovieClickListener != null){
-                    mMovieClickListener.onMovieClick(mMovies.get(pos), pos);
+                    mMovieClickListener.onMovieClick(view, mMovies.get(pos), pos);
                 }
             }
         });
@@ -72,6 +73,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.VH> {
             imageViewPoster = (ImageView)itemView.findViewById(R.id.movie_item_image_poster);
             textViewTitle = (TextView) itemView.findViewById(R.id.movie_item_text_title);
             textViewYear = (TextView)itemView.findViewById(R.id.movie_item_text_year);
+
+            ViewCompat.setTransitionName(imageViewPoster, "capa");
+            ViewCompat.setTransitionName(textViewTitle, "titulo");
+            ViewCompat.setTransitionName(textViewYear, "ano");
         }
     }
 }

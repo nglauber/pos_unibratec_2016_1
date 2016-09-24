@@ -10,4 +10,7 @@
     <string name="msg_removed_favorites">Deleted from favorites</string>
     <string name="text_undo">Undo</string>
     <string name="empty_text">No movies to be shown\n at the moment</string>
+
+    <string name="menu_share">Share</string>
+    <string name="share_text">Watch \'%1$s\' here is the plot:\n %2$s</string>
 </resources>

@@ -7,10 +7,13 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -66,14 +69,21 @@ public class MainActivity extends AppCompatActivity implements OnMovieClickListe
     }
 
     @Override
-    public void onMovieClick(Movie movie, int position) {
+    public void onMovieClick(View view, Movie movie, int position) {
         // Esse método é chamado pelas telas de listagem quando o usuário
         // clica em um item da lista (ver MovieListFragment e FavoriteMoviesFragment)
         if (getResources().getBoolean(R.bool.phone)) {
+            ActivityOptionsCompat optionsCompat =
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(this,
+                            Pair.create(view.findViewById(R.id.movie_item_image_poster), "capa"),
+                            Pair.create(view.findViewById(R.id.movie_item_text_title), "titulo"),
+                            Pair.create(view.findViewById(R.id.movie_item_text_year), "ano"));
+
             // Se for smartphone, abra uma nova activity
             Intent it = new Intent(MainActivity.this, DetailActivity.class);
             it.putExtra(DetailActivity.EXTRA_MOVIE, movie);
-            startActivity(it);
+            ActivityCompat.startActivity(this, it, optionsCompat.toBundle());
+
         } else {
             // Se for tablet, exiba um fragment a direita
             DetailMovieFragment detailMovieFragment = DetailMovieFragment.newInstance(movie);

@@ -2,6 +2,7 @@ package br.com.nglauber.aula04_filmes;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,24 +24,39 @@ public class MovieCursorAdapter extends SimpleCursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(LAYOUT, parent, false);
+        View view = LayoutInflater.from(context).inflate(LAYOUT, parent, false);
+
+        VH vh = new VH();
+        vh.imageViewPoster = (ImageView) view.findViewById(R.id.movie_item_image_poster);
+        vh.textViewTitle = (TextView) view.findViewById(R.id.movie_item_text_title);
+        vh.textViewYear = (TextView) view.findViewById(R.id.movie_item_text_year);
+        view.setTag(vh);
+
+        ViewCompat.setTransitionName(vh.imageViewPoster, "capa");
+        ViewCompat.setTransitionName(vh.textViewTitle, "titulo");
+        ViewCompat.setTransitionName(vh.textViewYear, "ano");
+
+        return view;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ImageView imageViewPoster = (ImageView) view.findViewById(R.id.movie_item_image_poster);
-        TextView textViewTitle = (TextView) view.findViewById(R.id.movie_item_text_title);
-        TextView textViewYear = (TextView) view.findViewById(R.id.movie_item_text_year);
-
         String poster = cursor.getString(cursor.getColumnIndex(MovieContract.COL_POSTER));
         String title = cursor.getString(cursor.getColumnIndex(MovieContract.COL_TITLE));
         String year = cursor.getString(cursor.getColumnIndex(MovieContract.COL_YEAR));
 
+        VH vh = (VH)view.getTag();
         Glide.with(context)
                 .load(poster)
                 .placeholder(R.drawable.ic_placeholder)
-                .into(imageViewPoster);
-        textViewTitle.setText(title);
-        textViewYear.setText(year);
+                .into(vh.imageViewPoster);
+        vh.textViewTitle.setText(title);
+        vh.textViewYear.setText(year);
+    }
+
+    class VH {
+        ImageView imageViewPoster;
+        TextView textViewTitle;
+        TextView textViewYear;
     }
 }

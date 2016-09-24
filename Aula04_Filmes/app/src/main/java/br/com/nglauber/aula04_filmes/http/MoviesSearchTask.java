@@ -13,13 +13,10 @@ public class MoviesSearchTask extends AsyncTaskLoader<List<Movie>> {
     List<Movie> movies;
     String query;
 
-    public MoviesSearchTask(Context context, String query, List<Movie> movies) {
+    public MoviesSearchTask(Context context, String query) {
         super(context);
         this.query = query;
         this.movies = new ArrayList<>();
-        if (movies != null) {
-            this.movies.addAll(movies);
-        }
     }
 
     @Override

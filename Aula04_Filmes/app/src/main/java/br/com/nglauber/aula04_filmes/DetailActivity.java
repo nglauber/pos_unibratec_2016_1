@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -41,6 +42,7 @@ public class DetailActivity extends AppCompatActivity {
         // exceto a capa que já carregamos aqui, uma vez que essa informação
         // já existe no objeto Movie.
         ImageView imgPoster = (ImageView)findViewById(R.id.detail_image_poster);
+        ViewCompat.setTransitionName(imgPoster, "capa");
         Glide.with(imgPoster.getContext()).load(mMovie.getPoster()).into(imgPoster);
 
         // Esse receiver detectará se o Movie foi adicionado ou removido dos favoritos

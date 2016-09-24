@@ -48,12 +48,12 @@ public class MovieListFragment extends Fragment
         mAdapter = new MovieAdapter(getActivity(), mMoviesList);
         mAdapter.setMovieClickListener(new OnMovieClickListener() {
             @Override
-            public void onMovieClick(Movie movie, int position) {
+            public void onMovieClick(View view, Movie movie, int position) {
                 // Nessa abordagem o click é mais lento,
                 // mas não precisamos usar um atributo adicional
                 Activity activity = getActivity();
                 if (activity instanceof OnMovieClickListener){
-                    ((OnMovieClickListener)activity).onMovieClick(movie, position);
+                    ((OnMovieClickListener)activity).onMovieClick(view, movie, position);
                 }
             }
         });
@@ -109,19 +109,19 @@ public class MovieListFragment extends Fragment
     @Override
     public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
         String s = args != null ? args.getString(QUERY_PARAM) : null;
-        return new MoviesSearchTask(getContext(), s, mMoviesList);
+        return new MoviesSearchTask(getContext(), s);
     }
 
     @Override
     public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
+        mMoviesList.clear();
         if (data != null && data.size() > 0){
-            mMoviesList.clear();
             mMoviesList.addAll(data);
-            mAdapter.notifyDataSetChanged();
             mEmptyView.setVisibility(View.GONE);
         } else {
             mEmptyView.setVisibility(View.VISIBLE);
         }
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override

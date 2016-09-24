@@ -4,14 +4,14 @@
     android:layout_height="match_parent"
     tools:context="br.com.nglauber.aula04_filmes.FavoriteMoviesFragment">
 
-    <ListView
+    <android.support.v7.widget.ListViewCompat
+        android:id="@+id/favorites_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/favorites_list"
+        android:clipToPadding="false"
         android:divider="@android:color/transparent"
         android:dividerHeight="16dp"
-        android:padding="8dp"
-        android:clipToPadding="false"/>
+        android:padding="8dp" />
 
-    <include layout="@layout/layout_empty_list"/>
+    <include layout="@layout/layout_empty_list" />
 </FrameLayout>
