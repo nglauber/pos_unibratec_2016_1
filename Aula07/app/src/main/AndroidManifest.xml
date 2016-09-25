@@ -21,12 +21,17 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.AIRPLANE_MODE"/>
+                <action android:name="android.intent.action.AIRPLANE_MODE" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.WALLPAPER_CHANGED"/>
+                <action android:name="android.intent.action.WALLPAPER_CHANGED" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".ContadorService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
