@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 
 import br.com.nglauber.aula04_filmes.database.MovieContract;
 import br.com.nglauber.aula04_filmes.database.MoviesProvider;
+import br.com.nglauber.aula04_filmes.model.Movie;
 
 public class MovieDetailUtils {
 
@@ -31,5 +32,15 @@ public class MovieDetailUtils {
         } else {
             fab.setImageResource(R.drawable.ic_unfavorite);
         }
+    }
+
+    public static Movie movieItemFromCursor(Cursor cursor){
+        Movie movie = new Movie();
+        movie.setId(cursor.getLong(cursor.getColumnIndex(MovieContract._ID)));
+        movie.setImdbId(cursor.getString(cursor.getColumnIndex(MovieContract.COL_IMDB_ID)));
+        movie.setTitle(cursor.getString(cursor.getColumnIndex(MovieContract.COL_TITLE)));
+        movie.setPoster(cursor.getString(cursor.getColumnIndex(MovieContract.COL_POSTER)));
+        movie.setYear(cursor.getString(cursor.getColumnIndex(MovieContract.COL_YEAR)));
+        return movie;
     }
 }

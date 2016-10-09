@@ -1,13 +1,19 @@
 package br.com.nglauber.aula04_filmes.database;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+
+import br.com.nglauber.aula04_filmes.widget.MovieWidget;
+import br.com.nglauber.aula04_filmes.widget.MovieWidgetService;
 
 public class MoviesProvider extends ContentProvider {
 
@@ -71,6 +77,7 @@ public class MoviesProvider extends ContentProvider {
                 throw new RuntimeException("Error inserting moving.");
             }
             notifyChanges(uri);
+            notifyWidget();
             return ContentUris.withAppendedId(MOVIES_URI, id);
 
         } else {
@@ -96,6 +103,8 @@ public class MoviesProvider extends ContentProvider {
                 throw new RuntimeException("Fail deleting movie");
             }
             notifyChanges(uri);
+
+            notifyWidget();
 
             return rowsAffected;
 
@@ -151,6 +160,18 @@ public class MoviesProvider extends ContentProvider {
         // para que a listagem de favoritos seja atualizada.
         if (getContext() != null) {
             getContext().getContentResolver().notifyChange(uri, null);
+        }
+    }
+
+    private void notifyWidget() {
+        ComponentName componentName = new ComponentName(getContext(), MovieWidget.class);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getContext());
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(componentName);
+        if (appWidgetIds != null && appWidgetIds.length > 0) {
+            Intent it = new Intent(getContext(), MovieWidgetService.class);
+            it.putExtra(MovieWidget.EXTRA_ACTION, MovieWidget.ACTION_UPDATED);
+            it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+            getContext().startService(it);
         }
     }
 }

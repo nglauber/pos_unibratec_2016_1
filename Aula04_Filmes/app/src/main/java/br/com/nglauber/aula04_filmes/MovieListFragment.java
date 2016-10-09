@@ -74,7 +74,7 @@ public class MovieListFragment extends Fragment
         }
         mRecyclerView.setAdapter(mAdapter);
 
-        mLoaderManager = getActivity().getSupportLoaderManager();
+        mLoaderManager = getLoaderManager();
         mLoaderManager.initLoader(LOADER_ID, null, this);
 
         return view;

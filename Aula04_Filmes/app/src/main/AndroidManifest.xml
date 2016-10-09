@@ -35,6 +35,19 @@
             android:authorities="br.com.nglauber.movies"
             android:enabled="true"
             android:exported="false" />
+
+        <receiver
+            android:name=".widget.MovieWidget"
+            android:label="Meu Widget">
+            <intent-filter>
+                <action
+                    android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data android:resource="@xml/movie_widget"
+                android:name="android.appwidget.provider"/>
+        </receiver>
+
+        <service android:name=".widget.MovieWidgetService"/>
     </application>
 
 </manifest>

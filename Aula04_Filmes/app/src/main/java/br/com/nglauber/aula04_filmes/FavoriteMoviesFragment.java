@@ -85,12 +85,7 @@ public class FavoriteMoviesFragment extends Fragment
             // Criamos um objeto Movie para passamos para a MainActivity
             // perceba que esse Movie não tem todos os campos. Pois na tela
             // de listagem apenas os campos necessários são utilizados
-            Movie movie = new Movie();
-            movie.setId(cursor.getLong(cursor.getColumnIndex(MovieContract._ID)));
-            movie.setImdbId(cursor.getString(cursor.getColumnIndex(MovieContract.COL_IMDB_ID)));
-            movie.setTitle(cursor.getString(cursor.getColumnIndex(MovieContract.COL_TITLE)));
-            movie.setPoster(cursor.getString(cursor.getColumnIndex(MovieContract.COL_POSTER)));
-            movie.setYear(cursor.getString(cursor.getColumnIndex(MovieContract.COL_YEAR)));
+            Movie movie = MovieDetailUtils.movieItemFromCursor(cursor);
             mMovieClickListener.onMovieClick(view, movie, position);
         }
     }
