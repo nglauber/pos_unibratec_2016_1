@@ -109,7 +109,8 @@ public class DetailMovieFragment extends Fragment {
 
         // Se o objeto mMovie possui um ID (no banco local), carregue do banco local,
         // senão carregue do servidor.
-        if (mMovie.getId() > 0){
+        boolean isFavorite = MovieDetailUtils.isFavorite(getActivity(), mMovie.getImdbId());
+        if (isFavorite){
             // Faz a requisição em background ao banco de dados (ver mCursorCallback)
             getLoaderManager().initLoader(LOADER_DB, null, mCursorCallback);
         } else {
@@ -183,8 +184,10 @@ public class DetailMovieFragment extends Fragment {
             // perceba que estamos utilizando a Uri específica
             // (veja o método query do MovieProvider)
             return new CursorLoader(getActivity(),
-                    ContentUris.withAppendedId(MoviesProvider.MOVIES_URI, mMovie.getId()),
-                    null, null, null, null);
+                    MoviesProvider.MOVIES_URI,
+                    null,
+                    MovieContract.COL_IMDB_ID +" = ?",
+                    new String[]{ mMovie.getImdbId() }, null);
         }
 
         @Override

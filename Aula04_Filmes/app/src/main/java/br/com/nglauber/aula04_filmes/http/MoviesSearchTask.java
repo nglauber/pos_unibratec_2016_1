@@ -22,7 +22,7 @@ public class MoviesSearchTask extends AsyncTaskLoader<List<Movie>> {
     @Override
     protected void onStartLoading() {
         super.onStartLoading();
-        if (query != null) {
+        if (query != null && (movies == null || movies.isEmpty())) {
             forceLoad();
         } else {
             deliverResult(movies);
