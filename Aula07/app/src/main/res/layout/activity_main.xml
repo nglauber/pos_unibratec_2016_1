@@ -36,13 +36,13 @@
         android:id="@+id/button2"
         android:onClick="iniciarServico"/>
 
-    <ProgressBar
-        style="@android:style/Widget.DeviceDefault.ProgressBar.Large"
-        android:indeterminate="true"
+    <Button
+        android:text="GCM Network Manager"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/button3"
+        android:onClick="agendarGCM"
         android:layout_below="@+id/button2"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/progressBar" />
+        android:layout_alignParentStart="true" />
 </RelativeLayout>

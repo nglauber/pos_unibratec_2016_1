@@ -1,11 +1,15 @@
 package br.com.nglauber.aula07;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
@@ -28,6 +32,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         mReceiver = new MyReceiver();
         IntentFilter filter = new IntentFilter(ACTION_VAI_FILHAO);
         registerReceiver(mReceiver, filter);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
     }
 
     @Override
@@ -68,5 +77,29 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 }
             }
         }, 1000);
+    }
+
+    public void agendarGCM(View view) {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent resultPendingIntent =
+                PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification notification = new NotificationCompat.Builder(this)
+                .setContentIntent(resultPendingIntent)
+                .setContentTitle("GCM Network manager")
+                .setContentText("Teste")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .build();
+        NotificationManagerCompat.from(this).notify(0, notification);
+
+//        OneoffTask task = new OneoffTask.Builder()
+//                .setService(MyTaskService.class)
+//                .setTag("Qualquer coisa")
+//                .setExecutionWindow(0, 30L)
+//                .build();
+//
+//        GcmNetworkManager.getInstance(this).schedule(task);
     }
 }
