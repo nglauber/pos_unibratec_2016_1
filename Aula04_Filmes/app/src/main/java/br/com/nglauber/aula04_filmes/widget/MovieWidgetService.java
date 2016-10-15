@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.v4.app.TaskStackBuilder;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.widget.RemoteViews;
 
@@ -82,12 +81,10 @@ public class MovieWidgetService extends Service {
             position = mWidgetIds.get(appWidgetId);
         }
 
-        // TODO notificar widget que não há mais favoritos
         Cursor cursor = getContentResolver().query(
                 MoviesProvider.MOVIES_URI, null, null, null, null);
 
         if (cursor == null || cursor.getCount() == 0){
-            //TODO exibir no widget que não há favoritos
             return;
         }
 
@@ -109,9 +106,6 @@ public class MovieWidgetService extends Service {
 
         // Atualizando posição corrente no sparse array.
         mWidgetIds.put(appWidgetId, position);
-
-        Log.d("NGVL", "ACTION = "+ acao);
-        Log.d("NGVL", "POSITION = "+ position);
 
         // Lendo a URL da capa e o título a partir do cursor
         final Movie movie = MovieDetailUtils.movieItemFromCursor(cursor);
