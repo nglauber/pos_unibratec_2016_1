@@ -208,7 +208,6 @@ public class DetailMovieFragment extends Fragment {
                 movie.setRuntime(cursor.getString(cursor.getColumnIndex(MovieContract.COL_RUNTIME)));
                 movie.setRating(cursor.getFloat(cursor.getColumnIndex(MovieContract.COL_RATING)));
                 updateUI(movie);
-                createShareIntent(movie);
             }
 
 
@@ -224,6 +223,7 @@ public class DetailMovieFragment extends Fragment {
         mShareIntent.setType("text/plain");
         mShareIntent.putExtra(Intent.EXTRA_TEXT,
                 getString(R.string.share_text, movie.getTitle(), movie.getPlot()));
+        mShareActionProvider.setShareIntent(mShareIntent);
     }
 
     // --------------- INNER
@@ -272,6 +272,7 @@ public class DetailMovieFragment extends Fragment {
             imgPoster.setVisibility(View.VISIBLE);
             Glide.with(imgPoster.getContext()).load(movie.getPoster()).into(imgPoster);
         }
+        createShareIntent(movie);
     }
 
     // Método auxiliar que insere/remove o movie no banco de dados
