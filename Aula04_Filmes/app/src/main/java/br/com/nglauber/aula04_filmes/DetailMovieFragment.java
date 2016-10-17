@@ -223,7 +223,9 @@ public class DetailMovieFragment extends Fragment {
         mShareIntent.setType("text/plain");
         mShareIntent.putExtra(Intent.EXTRA_TEXT,
                 getString(R.string.share_text, movie.getTitle(), movie.getPlot()));
-        mShareActionProvider.setShareIntent(mShareIntent);
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(mShareIntent);
+        }
     }
 
     // --------------- INNER
